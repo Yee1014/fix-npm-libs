@@ -1,0 +1,48 @@
+diff --git a/node_modules/dom-align/dist-node/index.js b/node_modules/dom-align/dist-node/index.js
+index 9d91522..36f775f 100644
+--- a/node_modules/dom-align/dist-node/index.js
++++ b/node_modules/dom-align/dist-node/index.js
+@@ -721,6 +721,7 @@ function getVisibleRectForElement(element, alwaysByViewport) {
+   var win = doc.defaultView || doc.parentWindow;
+   var body = doc.body;
+   var documentElement = doc.documentElement;
++  var docBox = body.getBoundingClientRect();
+ 
+   // Determine the size of the visible rect by climbing the dom accounting for
+   // all scrollable containers.
+@@ -792,6 +793,11 @@ function getVisibleRectForElement(element, alwaysByViewport) {
+     var maxVisibleHeight = Math.max(documentHeight, scrollY + viewportHeight);
+     visibleRect.bottom = Math.min(visibleRect.bottom, maxVisibleHeight);
+   }
++
++  // 有可能是iframe嵌套，需要增加偏移值
++  visibleRect.right += docBox.left;
++  visibleRect.bottom += docBox.top;
++
+   return visibleRect.top >= 0 && visibleRect.left >= 0 && visibleRect.bottom > visibleRect.top && visibleRect.right > visibleRect.left ? visibleRect : null;
+ }
+ 
+diff --git a/node_modules/dom-align/dist-web/index.js b/node_modules/dom-align/dist-web/index.js
+index 244557a..606b171 100644
+--- a/node_modules/dom-align/dist-web/index.js
++++ b/node_modules/dom-align/dist-web/index.js
+@@ -752,6 +752,7 @@ function getVisibleRectForElement(element, alwaysByViewport) {
+   var win = doc.defaultView || doc.parentWindow;
+   var body = doc.body;
+   var documentElement = doc.documentElement;
++  var docBox = body.getBoundingClientRect();
+ 
+   // Determine the size of the visible rect by climbing the dom accounting for
+   // all scrollable containers.
+@@ -823,6 +824,11 @@ function getVisibleRectForElement(element, alwaysByViewport) {
+     var maxVisibleHeight = Math.max(documentHeight, scrollY + viewportHeight);
+     visibleRect.bottom = Math.min(visibleRect.bottom, maxVisibleHeight);
+   }
++
++  // 有可能是iframe嵌套，需要增加偏移值
++  visibleRect.right += docBox.left;
++  visibleRect.bottom += docBox.top;
++
+   return visibleRect.top >= 0 && visibleRect.left >= 0 && visibleRect.bottom > visibleRect.top && visibleRect.right > visibleRect.left ? visibleRect : null;
+ }
+ 
