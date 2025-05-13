@@ -1,4 +1,4 @@
-# fix node libs
+# fix npm libs
 
 使用 `patch-package` 修复npm包
 
