@@ -50,16 +50,18 @@ index 9273b24..0787ecd 100644
      if (this.$el.parentNode) {
        this.$el.parentNode.removeChild(this.$el);
 diff --git a/node_modules/ant-design-vue/es/vc-trigger/Trigger.js b/node_modules/ant-design-vue/es/vc-trigger/Trigger.js
-index ba3d65d..5b448ae 100644
+index ba3d65d..ad22591 100644
 --- a/node_modules/ant-design-vue/es/vc-trigger/Trigger.js
 +++ b/node_modules/ant-design-vue/es/vc-trigger/Trigger.js
-@@ -443,6 +443,11 @@ export default {
+@@ -443,6 +443,13 @@ export default {
        if (alignPoint && event) {
          this.setPoint(event);
        }
 +      if (hasProp(this, 'stretch')) {
 +        this.$nextTick(function () {
-+          this._component?.setStretchSize();
++          if (this._component) {
++            this._component.setStretchSize();
++          }
 +        });
 +      }
      },
