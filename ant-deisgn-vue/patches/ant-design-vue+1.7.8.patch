@@ -21,7 +21,7 @@ index f9fb28d..db51d04 100644
      },
      blur: function blur() {
 diff --git a/node_modules/ant-design-vue/es/vc-trigger/Popup.js b/node_modules/ant-design-vue/es/vc-trigger/Popup.js
-index 9273b24..5f808fb 100644
+index 9273b24..0787ecd 100644
 --- a/node_modules/ant-design-vue/es/vc-trigger/Popup.js
 +++ b/node_modules/ant-design-vue/es/vc-trigger/Popup.js
 @@ -47,9 +47,9 @@ export default {
@@ -35,7 +35,7 @@ index 9273b24..5f808fb 100644
      });
    },
  
-@@ -61,13 +61,15 @@ export default {
+@@ -61,13 +61,7 @@ export default {
    //     this.domEl = null;
    //   }
    // },
@@ -46,14 +46,22 @@ index 9273b24..5f808fb 100644
 -      _this2.setStretchSize();
 -    });
 -  },
-+  // updated: function updated() {
-+  //   var _this2 = this;
-+
-+  //   this.$nextTick(function () {
-+  //     _this2.setStretchSize();
-+  //   });
-+  // },
-+
    beforeDestroy: function beforeDestroy() {
      if (this.$el.parentNode) {
        this.$el.parentNode.removeChild(this.$el);
+diff --git a/node_modules/ant-design-vue/es/vc-trigger/Trigger.js b/node_modules/ant-design-vue/es/vc-trigger/Trigger.js
+index ba3d65d..5b448ae 100644
+--- a/node_modules/ant-design-vue/es/vc-trigger/Trigger.js
++++ b/node_modules/ant-design-vue/es/vc-trigger/Trigger.js
+@@ -443,6 +443,11 @@ export default {
+       if (alignPoint && event) {
+         this.setPoint(event);
+       }
++      if (hasProp(this, 'stretch')) {
++        this.$nextTick(function () {
++          this._component?.setStretchSize();
++        });
++      }
+     },
+     setPoint: function setPoint(point) {
+       var alignPoint = this.$props.alignPoint;
