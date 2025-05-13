@@ -1,6 +1,7 @@
 # ant-design-vue
 
 - 版本 1.7.8
+- [仓库](https://github.com/vueComponent/ant-design-vue/tree/1.7.8)
 
 ## fix
 
