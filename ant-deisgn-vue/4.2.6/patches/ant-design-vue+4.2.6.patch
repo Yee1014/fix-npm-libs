@@ -1,0 +1,69 @@
+diff --git a/node_modules/ant-design-vue/es/table/Table.js b/node_modules/ant-design-vue/es/table/Table.js
+index 8616e5d..93df89a 100644
+--- a/node_modules/ant-design-vue/es/table/Table.js
++++ b/node_modules/ant-design-vue/es/table/Table.js
+@@ -25,6 +25,7 @@ import { initDefaultProps } from '../_util/props-util';
+ import { useProvideSlots, useProvideTableContext } from './context';
+ import useColumns from './hooks/useColumns';
+ import { convertChildrenToColumns } from './util';
++import cloneDeep from 'lodash-es/cloneDeep';
+ import { stringType, booleanType, arrayType, someType, functionType, objectType } from '../_util/type';
+ // CSSINJS
+ import useStyle from './style';
+@@ -174,7 +175,7 @@ const InternalTable = defineComponent({
+         });
+       }
+       onChange === null || onChange === void 0 ? void 0 : onChange(changeInfo.pagination, changeInfo.filters, changeInfo.sorter, {
+-        currentDataSource: getFilterData(getSortData(rawData.value, changeInfo.sorterStates, childrenColumnName.value), changeInfo.filterStates),
++        currentDataSource: getFilterData(cloneDeep(getSortData(rawData.value, changeInfo.sorterStates, childrenColumnName.value)), changeInfo.filterStates, childrenColumnName.value),
+         action
+       });
+     };
+@@ -214,7 +215,7 @@ const InternalTable = defineComponent({
+       onFilterChange,
+       getPopupContainer: toRef(props, 'getPopupContainer')
+     });
+-    const mergedData = computed(() => getFilterData(sortedData.value, filterStates.value));
++    const mergedData = computed(() => getFilterData(cloneDeep(sortedData.value), filterStates.value, childrenColumnName.value));
+     // ============================ Column ============================
+     const [transformBasicColumns] = useColumns(toRef(props, 'contextSlots'));
+     const columnTitleProps = computed(() => {
+diff --git a/node_modules/ant-design-vue/es/table/hooks/useFilter/index.js b/node_modules/ant-design-vue/es/table/hooks/useFilter/index.js
+index 0664c47..71d4424 100644
+--- a/node_modules/ant-design-vue/es/table/hooks/useFilter/index.js
++++ b/node_modules/ant-design-vue/es/table/hooks/useFilter/index.js
+@@ -124,7 +124,7 @@ function generateFilterInfo(filterStates) {
+   });
+   return currentFilters;
+ }
+-export function getFilterData(data, filterStates) {
++export function getFilterData(data, filterStates, childrenColumnName) {
+   return filterStates.reduce((currentData, filterState) => {
+     const {
+       column: {
+@@ -134,12 +134,19 @@ export function getFilterData(data, filterStates) {
+       filteredKeys
+     } = filterState;
+     if (onFilter && filteredKeys && filteredKeys.length) {
+-      return currentData.filter(record => filteredKeys.some(key => {
+-        const keys = flattenKeys(filters);
+-        const keyIndex = keys.findIndex(k => String(k) === String(key));
+-        const realKey = keyIndex !== -1 ? keys[keyIndex] : key;
+-        return onFilter(realKey, record);
+-      }));
++      return currentData.filter(record => {
++        const recordChildren = record[childrenColumnName];
++        if (recordChildren) {
++          const filterChildren = getFilterData(recordChildren, filterStates, childrenColumnName);
++          record[childrenColumnName] = filterChildren.length ? filterChildren : null;
++        }
++        return filteredKeys.some(key => {
++          const keys = flattenKeys(filters);
++          const keyIndex = keys.findIndex(k => String(k) === String(key));
++          const realKey = keyIndex !== -1 ? keys[keyIndex] : key;
++          return onFilter(realKey, record);
++        }) || record[childrenColumnName]?.length;
++      });
+     }
+     return currentData;
+   }, data);
